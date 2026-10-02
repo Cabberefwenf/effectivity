@@ -5,3 +5,15 @@ __pycache__/
 build/
 dist/
 *.jsonl
+
+# Web surface
+node_modules/
+.next/
+next-env.d.ts
+*.tsbuildinfo
+.vercel/
+.env*
+!.env.example
+playwright-report/
+test-results/
+screenshots/

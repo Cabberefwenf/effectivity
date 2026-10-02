@@ -1,0 +1,12 @@
+# Local state and tools: never upload.
+.venv/
+node_modules/
+.next/
+.git/
+tests/
+e2e/
+tools/
+.github/
+playwright-report/
+test-results/
+*.jsonl

@@ -1,0 +1,13 @@
+.next
+node_modules
+.venv
+package-lock.json
+lib/rules.generated.json
+tests
+src
+docs
+examples
+*.md
+*.py
+*.toml
+Makefile
