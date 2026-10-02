@@ -1,0 +1,5 @@
+unit_id,change_id,incorporated
+U-A01,C-1001,true
+U-A01,C-1003,true
+U-A04,C-1001,true
+U-A05,C-1002,false

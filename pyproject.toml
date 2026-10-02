@@ -1,0 +1,21 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "effectivity"
+version = "1.0.0"
+description = "Deterministic as-built effectivity resolver: per-unit status of an engineering change."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = ["pydantic>=2"]
+
+[project.optional-dependencies]
+dev = ["pytest"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/effectivity"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

@@ -1,0 +1,11 @@
+unit_id,program,effectivity_key,hold_point,hold_point_status,predecessor_hold_status
+U-A01,ALPHA,0121,HP040,closed,closed
+U-A02,ALPHA,0122,HP030,open,closed
+U-A03,ALPHA,0123,HP020,open,closed
+U-A04,ALPHA,0123A,HP020,open,open
+U-A05,ALPHA,0124,HP010,closed,closed
+U-B01,BRAVO,B0007,HP030,closed,closed
+U-B02,BRAVO,B0008,HP020,open,closed
+U-B03,BRAVO,B0009,HP020,open,closed
+U-B04,BRAVO,B0010,HP010,open,closed
+U-B05,BRAVO,B0011,HP030,open,closed

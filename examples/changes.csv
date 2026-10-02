@@ -1,0 +1,6 @@
+change_id,effectivity_from,effectivity_to,incorporation_hold_point,disposition,supersedes_part,replacement_part
+C-1001,0121,0123A,HP020,rework,PN-1100,PN-1101
+C-1002,0122,0124,HP030,retrofit,PN-2200,PN-2201
+C-1003,0121,0124,HP020,use_as_is,PN-3300,
+C-2001,B0007,B0010,HP020,scrap,PN-4400,
+C-2002,B0008,B0011,HP030,rework,PN-5500,PN-5501

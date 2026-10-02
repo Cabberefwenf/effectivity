@@ -1,0 +1,7 @@
+unit_id,part,qty_received_to_stores,qty_staged_at_work,qty_installed
+U-A02,PN-2200,8,0,0
+U-A02,PN-2200,0,4,0
+U-A03,PN-1100,12,0,0
+U-A03,PN-3300,2,0,2
+U-B01,PN-4400,1,0,1
+U-B03,PN-4400,6,2,0
