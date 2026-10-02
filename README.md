@@ -79,3 +79,34 @@ supply and requires `--log`; nothing in the tool reads a clock.
 - [docs/adr/0001-effectivity-key.md](docs/adr/0001-effectivity-key.md): how keys and hold points are ordered.
 - [docs/adr/0002-no-clock-in-decision.md](docs/adr/0002-no-clock-in-decision.md): why the decision function is pure.
 - `tests/`: invariant tests, an exhaustive cross-check against an independent reference table, input edge cases, log tests.
+
+## Web demo and deploy
+
+A small web page runs the same resolver: load the synthetic sample (or paste
+four CSVs), see the six states with counts and filters, and open the rule text
+behind any reason code. The decision logic is only the Python package; the page
+is a Next.js shell around one stateless function (`api/resolve.py`). Nothing you
+paste is stored or logged by this code. Synthetic data only: do not upload
+export-controlled or customer files. Limits are in [LIMITS.md](LIMITS.md#web-surface),
+the choice is in [ADR 0003](docs/adr/0003-vercel-web-surface.md).
+
+```
+npm ci
+pip install -e .                  # the function needs pydantic
+npm run dev:api &                 # the Python function on 127.0.0.1:8787
+npm run dev                       # http://localhost:3000, proxies /api to it
+npm run verify                    # secret scan, rules drift, tokens, lint, format, tests, build, types
+npx playwright install chromium && npm run test:e2e
+```
+
+Deploy (no environment variables and no dashboard settings are required;
+`vercel.json` carries framework, install and build commands):
+
+```
+npx vercel link
+npx vercel --prod                 # needs VERCEL_TOKEN or an interactive `vercel login`
+```
+
+or import the GitHub repository in Vercel. `NEXT_PUBLIC_SITE_URL` is optional
+and only sets the canonical and Open Graph origin. Preview deployments are
+`noindex`.

@@ -13,6 +13,43 @@ What this tool is not, and what it does not prove.
 - A human still signs incorporation. This tool classifies; it does not
   authorize work.
 
+## Web surface
+
+The web page is a thin shell around the same resolver. It adds these limits.
+
+- **Synthetic data only.** The page says so on every screen. It is a public
+  demonstration and not an approved place for export-controlled or customer
+  data. Do not use it for either.
+- **Nothing is stored by this code.** No database, file store, queue, cookie,
+  session or analytics. The function does not log request bodies (a test checks
+  that it imports no logging, file system, network or clock). Results are not
+  saved; use "Download JSON" to keep one.
+- **The host is outside this code.** Vercel records ordinary request metadata
+  such as time, path and status, as any host does. This repository cannot
+  promise anything about the platform, which is one more reason for synthetic
+  data.
+- **Size caps.** 256 KiB per request; 1,000 units, 200 changes, 5,000 material
+  rows, 5,000 incorporation rows; at most 5,000 unit-and-change pairs. A request
+  past a cap is refused with a message, never truncated. The same numbers are in
+  `src/effectivity/service.py` and `lib/limits.ts`.
+- **Cold starts.** The first request after idle can take a second or two.
+- **Same origin only.** The function sends no CORS headers and is not an API for
+  other sites. There is no authentication and no rate limiting beyond the
+  platform's own; do not treat the endpoint as a service.
+- **The page does not decide.** The browser filters, sorts and displays. A rule
+  change happens in the Python package and `docs/state-machine.md`; the rule
+  text on the page is generated from that document and a test fails if it is
+  stale.
+- **CSP residual.** Scripts and styles allow `'unsafe-inline'` because the
+  Next.js App Router emits inline bootstrap scripts (ADR 0003). No `eval`, no
+  remote origins.
+- **Vercel-specific behavior is not tested in CI.** CI builds the site, runs the
+  real function behind a production server, and checks the function in a clean
+  virtualenv with only `requirements.txt`. It does not deploy, so the platform's
+  Python install and routing are confirmed only by an actual deploy.
+- **Accessibility** is checked with automated axe scans and keyboard tests. That
+  finds many defects and not all; no manual screen-reader audit has been done.
+
 ## Key rule
 
 - The effectivity key rule is the one in
@@ -85,4 +122,4 @@ What this tool is not, and what it does not prove.
   would be in both.
 - `tools/mutate.py` applies hand-picked mutants. Killing all of them shows the
   tests notice those changes; it is not a coverage measure.
-- CI runs the suite on Python 3.11 and 3.12 only.
+- CI runs the suite on Python 3.11 and 3.12 only. The web checks run on Node 20 and 22; the end-to-end suite runs on Node 22 with Chrome only.
