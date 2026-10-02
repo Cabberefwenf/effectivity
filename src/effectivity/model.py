@@ -48,9 +48,12 @@ def parse_key(token: str) -> Key:
 
 
 def key_in_range(key: Key, lower: Key, upper: Key) -> bool:
-    """Inclusive range test. A different prefix is simply not in the series."""
-    if key.prefix != lower.prefix:
-        return False
+    """Inclusive range test.
+
+    `lower` and `upper` share a prefix (enforced on Change), and the prefix is
+    the first element of the tuple, so any key with a different prefix compares
+    outside the range: it is simply not in the series.
+    """
     return lower <= key <= upper
 
 

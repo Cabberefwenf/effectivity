@@ -12,7 +12,7 @@ cannot promise that.
 ## Decision
 
 - `effectivity.resolve` is a pure function of already-parsed models. It takes
-  no clock, no path, no handle. It imports only `__future__`, `typing`,
+  no clock, no path, no handle. It imports only `__future__`,
   `collections.abc`, and `effectivity.model`.
 - No rule uses time. If a future rule needs time, it must be an explicit input
   field of the models, and the rule version must change.
@@ -23,8 +23,12 @@ cannot promise that.
 - The input hash is SHA-256 over a canonical serialization of the four parsed
   input tables (sorted keys, compact separators, rows sorted by their own
   serialization, so row order in the CSV files does not matter).
-- The log is append-only: it is opened in append mode only, each run adds one
-  line, and existing lines are never rewritten.
+- The log is append-only: each run builds one whole newline-terminated line and
+  writes it with a single unbuffered write to a file opened in binary append
+  mode, and existing lines are never rewritten. If anything fails before the
+  write, the file is untouched. A short write is reported as an error, but a
+  crash or power loss mid-write can still leave a partial line; the next run
+  refuses to append to a file that does not end in a newline.
 
 ## Enforcement and its limits
 
@@ -32,7 +36,10 @@ cannot promise that.
   on calls to `open`, `print`, `eval`, `exec`, `__import__`, or any `now`,
   `today`, `utcnow`, `time` attribute.
 - A second test runs the resolver with `time.time`, `time.monotonic`,
-  `socket.socket`, and `open` patched to raise.
+  `time.perf_counter`, `socket.socket`, `socket.create_connection`, and `open`
+  patched to raise.
+- A third test runs the CLI in subprocesses with different `PYTHONHASHSEED`
+  values, time zones, locales, and working directories and compares the bytes.
 - These are static and behavioural checks of this module. They do not prove
   that no imported third-party code (pydantic) ever touches the clock. The
   guarantee for "no network calls" is the import allowlist plus the patched

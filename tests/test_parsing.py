@@ -88,8 +88,10 @@ def test_column_names_are_exact(tmp_path: Path, header: str) -> None:
 
 
 def test_short_and_long_rows_report_their_line_number(tmp_path: Path) -> None:
-    assert ":3:" in load_error(tmp_path, Unit, f"{UNITS_H}\n{GOOD_UNIT}\nU2,P,0150\n")
-    assert ":2:" in load_error(tmp_path, Unit, f"{UNITS_H}\n{GOOD_UNIT},extra\n")
+    short = load_error(tmp_path, Unit, f"{UNITS_H}\n{GOOD_UNIT}\nU2,P,0150\n")
+    long = load_error(tmp_path, Unit, f"{UNITS_H}\n{GOOD_UNIT},extra\n")
+    assert ":3:" in short and ":2:" in long
+    assert "wrong number of fields" in short and "wrong number of fields" in long
 
 
 def test_line_number_is_right_after_blank_lines(tmp_path: Path) -> None:
@@ -135,7 +137,7 @@ def test_quantity_edge_values_are_accepted(tmp_path: Path) -> None:
     assert (row.qty_received_to_stores, row.qty_staged_at_work, row.qty_installed) == (0, 7, 10**15 - 1)
 
 
-@pytest.mark.parametrize("value", [True, 2.0, 1.5, None, [1]])
+@pytest.mark.parametrize("value", [True, 2.0, 1.5, None, [1], -1, 10**15])
 def test_programmatic_quantities_must_be_real_ints(value: object) -> None:
     with pytest.raises(ValidationError):
         MaterialState(unit_id="U1", part="P", qty_received_to_stores=value,

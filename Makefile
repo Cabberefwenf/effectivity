@@ -3,7 +3,7 @@ VENV   := .venv
 BIN    := $(VENV)/bin
 STAMP  := $(VENV)/.installed
 
-.PHONY: test demo
+.PHONY: test demo mutate
 
 $(STAMP): pyproject.toml
 	@$(PYTHON) -m venv $(VENV)
@@ -19,3 +19,6 @@ demo: $(STAMP)
 		--changes examples/changes.csv \
 		--material examples/material.csv \
 		--incorporations examples/incorporations.csv
+
+mutate: $(STAMP)
+	$(BIN)/python tools/mutate.py

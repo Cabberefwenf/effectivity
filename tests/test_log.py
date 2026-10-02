@@ -365,3 +365,9 @@ def test_output_is_identical_across_hash_seeds_locales_time_zones_and_working_di
     }
     assert len(outputs) == 1
     assert b"blocked_material" in outputs.pop()
+
+
+def test_run_at_defaults_to_null_when_not_given(tmp_path: Path) -> None:
+    log = tmp_path / "l.jsonl"
+    append_run(log, "0" * 64, [])
+    assert json.loads(log.read_text())["run_at"] is None

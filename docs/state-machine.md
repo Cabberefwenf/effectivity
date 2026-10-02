@@ -156,12 +156,22 @@ Tables:
 
 ## Invariants and where they are tested
 
-| # | invariant | rule(s) | test file |
+`test_exhaustive.py` checks invariants 1 to 6 on all 24,000 combinations of a
+small domain (key position including both range boundaries and suffix keys,
+hold position, hold and predecessor status, four dispositions, five material
+shapes, three incorporation states) and compares every decision, reason code,
+and rule id list with an independent reference decision table written inside
+the test.
+
+| # | invariant | rule(s) | main tests |
 |---|---|---|---|
-| 1 | Outside range is always `out_of_effectivity` | R01 | `test_invariants.py` |
-| 2 | Open predecessor never yields `incorporated` | R02, R03 | `test_invariants.py` |
-| 3 | Passed hold point, not incorporated: `late`, unless blocked | R04, R05 | `test_invariants.py` |
-| 4 | Receipt to stores alone never blocks | R04 | `test_material.py` |
-| 5 | Disposition semantics (scrap, use_as_is, rework vs retrofit) | R04, R08-R10 | `test_dispositions.py` |
+| 1 | Outside range is always `out_of_effectivity` | R01 | `test_invariants.py`, `test_exhaustive.py` |
+| 2 | Open predecessor never yields `incorporated` | R02, R03 | `test_invariants.py`, `test_exhaustive.py` |
+| 3 | Passed hold point, not incorporated: `late`, unless blocked | R04, R05 | `test_invariants.py`, `test_exhaustive.py` |
+| 4 | Receipt to stores alone never blocks | R04 | `test_material.py`, `test_exhaustive.py` |
+| 5 | Disposition semantics (scrap, use_as_is, rework vs retrofit) | R04, R08-R10 | `test_dispositions.py`, `test_exhaustive.py` |
 | 6 | Deterministic; append-only log with input hash and rule version | all | `test_invariants.py`, `test_log.py` |
-| 7 | No clock, no network, no I/O in the decision function | all | `test_invariants.py` (static import and call check) |
+| 7 | No clock, no network, no I/O in the decision function | all | `test_invariants.py` (static import and call check, patched run), `test_log.py` (subprocess runs) |
+
+Invariant 7 is enforced by an import allowlist and a call check, not proven.
+See LIMITS.md.

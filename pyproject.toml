@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "effectivity"
-version = "1.0.0"
+version = "0.1.0"
 description = "Deterministic as-built effectivity resolver: per-unit status of an engineering change."
 readme = "README.md"
 requires-python = ">=3.11"
