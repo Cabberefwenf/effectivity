@@ -15,7 +15,7 @@ import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-R, M, L, C = "resolve.py", "model.py", "log.py", "cli.py"
+R, M, L, C, S, T = "resolve.py", "model.py", "log.py", "cli.py", "service.py", "tables.py"
 
 # (name, file, old, new); old must occur in the file, first occurrence is replaced.
 MUTANTS: list[tuple[str, str, str, str]] = [
@@ -72,9 +72,17 @@ MUTANTS: list[tuple[str, str, str, str]] = [
     ("log: no newline terminator", L, '+ "\\n").encode("utf-8")', ').encode("utf-8")'),
     ("log: sequence fixed at 0", L, "sequence = existing.count(b\"\\n\")", "sequence = 0"),
     ("log: run_at defaulted to a string", L, "    run_at: str | None = None,\n) -> int:", "    run_at: str | None = 'now',\n) -> int:"),
-    ("cli: BOM not handled", C, 'encoding="utf-8-sig"', 'encoding="utf-8"'),
-    ("cli: duplicate column allowed", C, "            if duplicated:", "            if False:"),
-    ("cli: short rows accepted", C, "if None in row or None in row.values():", "if False:"),
+    ("tables: BOM not handled", T, 'text.removeprefix("\\ufeff")', "text"),
+    ("tables: duplicate column allowed", T, "        if duplicated:", "        if False:"),
+    ("tables: short rows accepted", T, "if None in row or None in row.values():", "if False:"),
+    # The web function's guards: each cap, the method check and the no-store header must be pinned by a test.
+    ("service: body cap off by one", S, "if len(raw) > MAX_BODY_BYTES:", "if len(raw) > MAX_BODY_BYTES + 1:"),
+    ("service: Content-Length cap removed", S, "    if length > MAX_BODY_BYTES:", "    if False and length > MAX_BODY_BYTES:"),
+    ("service: row cap ignored", S, "max_rows=MAX_ROWS[name])", "max_rows=None)"),
+    ("service: pair cap off by one", S, "> MAX_PAIRS:", "> MAX_PAIRS + 1:"),
+    ("service: GET accepted", S, 'if environ.get("REQUEST_METHOD") != "POST":', 'if False:'),
+    ("service: response cacheable", S, '("Cache-Control", "no-store")', '("Cache-Control", "public")'),
+    ("service: sniffing allowed", S, '("X-Content-Type-Options", "nosniff")', '("X-Content-Type-Options", "")'),
 ]
 
 
@@ -82,7 +90,10 @@ def main() -> int:
     survivors: list[str] = []
     with tempfile.TemporaryDirectory() as tmp:
         work = Path(tmp) / "repo"
-        shutil.copytree(ROOT, work, ignore=shutil.ignore_patterns(".venv", ".git", "__pycache__", ".pytest_cache", "*.egg-info"))
+        shutil.copytree(ROOT, work, ignore=shutil.ignore_patterns(
+            ".venv", ".git", "__pycache__", ".pytest_cache", "*.egg-info",
+            "node_modules", ".next", ".vercel", "test-results", "playwright-report", "screenshots",
+        ))
         env = {"PYTHONPATH": str(work / "src"), "PATH": "/usr/bin:/bin"}
         baseline = subprocess.run(
             [sys.executable, "-m", "pytest", "-x", "-q", "-p", "no:cacheprovider"],

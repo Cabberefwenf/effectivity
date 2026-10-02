@@ -60,6 +60,7 @@ def test_function_returns_the_golden_report_for_the_examples() -> None:
     assert body == GOLDEN
     assert headers["Content-Type"].startswith("application/json")
     assert headers["Cache-Control"] == "no-store"
+    assert headers["X-Content-Type-Options"] == "nosniff"
     assert int(headers["Content-Length"]) > 0
 
 
@@ -145,6 +146,15 @@ def test_body_larger_than_the_cap_is_413_without_being_read() -> None:
     assert post(b"{}", length=service.MAX_BODY_BYTES + 1)[0].startswith("413")
 
 
+def test_the_body_cap_is_inclusive_at_exactly_the_limit() -> None:
+    raw = json.dumps(example_tables()).encode()
+    at_cap = raw + b" " * (service.MAX_BODY_BYTES - len(raw))
+    assert len(at_cap) == service.MAX_BODY_BYTES
+    assert service.handle(at_cap)[0] == 200
+    assert service.handle(at_cap + b" ")[0] == 413
+    assert post(at_cap)[0] == "200 OK"
+
+
 def test_row_caps_per_table() -> None:
     base = {n: table(n, []) for n in NAMES}
     rows = [f"U{n},P,{n:04d},HP010,open,closed" for n in range(service.MAX_ROWS["units"] + 1)]
@@ -161,6 +171,22 @@ def test_pair_cap() -> None:
     status, _, body = post({"units": table("units", units), "changes": table("changes", changes),
                             "material": table("material", []), "incorporations": table("incorporations", [])})
     assert status.startswith("413") and body["error"]["code"] == "too_many_pairs"
+
+
+def test_pair_cap_is_inclusive_at_exactly_the_limit(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(service, "MAX_PAIRS", 6)
+    empty = {"material": table("material", []), "incorporations": table("incorporations", [])}
+
+    def run(unit_count: int, change_count: int) -> int:
+        units = [f"U{n},P,{n:04d},HP010,open,closed" for n in range(unit_count)]
+        changes = [f"C{n},0000,9999,HP020,use_as_is,," for n in range(change_count)]
+        return service.handle(json.dumps(
+            {"units": table("units", units), "changes": table("changes", changes), **empty}
+        ).encode())[0]
+
+    assert run(3, 2) == 200   # 6 pairs: allowed
+    assert run(7, 1) == 413   # 7 pairs: refused
+    assert run(2, 4) == 413
 
 
 def test_largest_allowed_run_finishes_and_stays_under_the_response_limit() -> None:
@@ -268,8 +294,17 @@ def test_function_imports_the_package_from_src_without_it_being_installed() -> N
     assert result.stdout.strip() == "422 Unprocessable Content"
 
 
-def test_body_cap_matches_the_frontend_constant() -> None:
+def test_every_cap_matches_the_frontend_constants() -> None:
     import re
 
-    match = re.search(r"MAX_BODY_BYTES\s*=\s*([0-9_]+)", (ROOT / "lib" / "limits.ts").read_text())
-    assert match and int(match.group(1).replace("_", "")) == service.MAX_BODY_BYTES
+    ts = (ROOT / "lib" / "limits.ts").read_text()
+
+    def number(pattern: str) -> int:
+        match = re.search(pattern, ts)
+        assert match, pattern
+        return int(match.group(1))
+
+    assert number(r"MAX_BODY_BYTES\s*=\s*(\d+)") == service.MAX_BODY_BYTES
+    assert number(r"MAX_PAIRS\s*=\s*(\d+)") == service.MAX_PAIRS
+    for name, cap in service.MAX_ROWS.items():
+        assert number(rf"\b{name}:\s*(\d+)") == cap, name
