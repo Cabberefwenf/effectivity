@@ -3,13 +3,12 @@
 from __future__ import annotations
 
 import argparse
-import csv
 import sys
 from collections.abc import Sequence
 from pathlib import Path
 from typing import TypeVar
 
-from pydantic import BaseModel, ValidationError
+from pydantic import BaseModel
 
 from effectivity.log import append_run, count_by_status, input_hash
 from effectivity.model import (
@@ -20,49 +19,18 @@ from effectivity.model import (
     Unit,
 )
 from effectivity.resolve import RULE_VERSION, resolve
+from effectivity.tables import parse_csv
 
 M = TypeVar("M", bound=BaseModel)
 
 
 def load_table(path: Path, model: type[M]) -> list[M]:
-    """Read a CSV into models. Rules are in docs/state-machine.md ("Input rules").
-
-    UTF-8 with an optional BOM; header must be exactly the model's fields, each
-    once, in any order. Any problem raises ValueError naming file and line.
-    """
-    expected = set(model.model_fields)
-    rows: list[M] = []
+    """Read a CSV file into models (UTF-8, optional BOM). See `parse_csv` for the rules."""
     try:
-        with path.open(encoding="utf-8-sig", newline="") as handle:
-            reader = csv.DictReader(handle)
-            names = list(reader.fieldnames or [])
-            duplicated = sorted({n for n in names if names.count(n) > 1})
-            if duplicated:
-                raise ValueError(f"{path}: duplicate column(s) {duplicated}")
-            missing, unexpected = sorted(expected - set(names)), sorted(set(names) - expected)
-            if missing or unexpected:
-                raise ValueError(
-                    f"{path}: columns must be exactly {sorted(expected)}; "
-                    f"missing {missing}, unexpected {unexpected}"
-                )
-            for row in reader:
-                where = f"{path}:{reader.line_num}"
-                if None in row or None in row.values():
-                    raise ValueError(f"{where}: wrong number of fields")
-                try:
-                    rows.append(model.model_validate(row))
-                except ValidationError as exc:
-                    problems = "; ".join(
-                        f"{'.'.join(map(str, e['loc'])) or 'row'}: "
-                        f"{e['msg'].removeprefix('Value error, ')}"
-                        for e in exc.errors()
-                    )
-                    raise ValueError(f"{where}: {problems}") from exc
+        text = path.read_bytes().decode("utf-8-sig")
     except UnicodeDecodeError as exc:
         raise ValueError(f"{path}: not valid UTF-8 ({exc.reason})") from exc
-    except csv.Error as exc:
-        raise ValueError(f"{path}: malformed CSV ({exc})") from exc
-    return rows
+    return parse_csv(text, model, str(path))
 
 
 def format_table(decisions: Sequence[Decision]) -> str:

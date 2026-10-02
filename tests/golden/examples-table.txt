@@ -1,0 +1,63 @@
+unit_id  change_id  status              reason_code                               rule_ids
+-------  ---------  ------------------  ----------------------------------------  --------
+U-A01    C-1001     incorporated        INCORPORATED                              R02
+U-A01    C-1002     out_of_effectivity  OUT_OF_EFFECTIVITY                        R01
+U-A01    C-1003     incorporated        INCORPORATED                              R02
+U-A01    C-2001     out_of_effectivity  OUT_OF_EFFECTIVITY                        R01
+U-A01    C-2002     out_of_effectivity  OUT_OF_EFFECTIVITY                        R01
+U-A02    C-1001     late                LATE_HOLD_POINT_PASSED                    R05
+U-A02    C-1002     blocked_material    BLOCKED_RETROFIT_WRONG_MATERIAL           R04
+U-A02    C-1003     late                LATE_HOLD_POINT_PASSED                    R05
+U-A02    C-2001     out_of_effectivity  OUT_OF_EFFECTIVITY                        R01
+U-A02    C-2002     out_of_effectivity  OUT_OF_EFFECTIVITY                        R01
+U-A03    C-1001     incorporable        INCORPORABLE_REWORK                       R08
+U-A03    C-1002     not_yet_reached     NOT_YET_REACHED_BEFORE_HOLD_POINT         R06
+U-A03    C-1003     incorporable        INCORPORABLE_USE_AS_IS_NO_REWORK          R09
+U-A03    C-2001     out_of_effectivity  OUT_OF_EFFECTIVITY                        R01
+U-A03    C-2002     out_of_effectivity  OUT_OF_EFFECTIVITY                        R01
+U-A04    C-1001     not_yet_reached     DATA_ERROR_INCORPORATED_OPEN_PREDECESSOR  R03,R07
+U-A04    C-1002     not_yet_reached     NOT_YET_REACHED_BEFORE_HOLD_POINT         R06
+U-A04    C-1003     not_yet_reached     NOT_YET_REACHED_PREDECESSOR_OPEN          R07
+U-A04    C-2001     out_of_effectivity  OUT_OF_EFFECTIVITY                        R01
+U-A04    C-2002     out_of_effectivity  OUT_OF_EFFECTIVITY                        R01
+U-A05    C-1001     out_of_effectivity  OUT_OF_EFFECTIVITY                        R01
+U-A05    C-1002     not_yet_reached     NOT_YET_REACHED_BEFORE_HOLD_POINT         R06
+U-A05    C-1003     not_yet_reached     NOT_YET_REACHED_BEFORE_HOLD_POINT         R06
+U-A05    C-2001     out_of_effectivity  OUT_OF_EFFECTIVITY                        R01
+U-A05    C-2002     out_of_effectivity  OUT_OF_EFFECTIVITY                        R01
+U-B01    C-1001     out_of_effectivity  OUT_OF_EFFECTIVITY                        R01
+U-B01    C-1002     out_of_effectivity  OUT_OF_EFFECTIVITY                        R01
+U-B01    C-1003     out_of_effectivity  OUT_OF_EFFECTIVITY                        R01
+U-B01    C-2001     blocked_material    BLOCKED_SCRAP_WRONG_MATERIAL              R04
+U-B01    C-2002     out_of_effectivity  OUT_OF_EFFECTIVITY                        R01
+U-B02    C-1001     out_of_effectivity  OUT_OF_EFFECTIVITY                        R01
+U-B02    C-1002     out_of_effectivity  OUT_OF_EFFECTIVITY                        R01
+U-B02    C-1003     out_of_effectivity  OUT_OF_EFFECTIVITY                        R01
+U-B02    C-2001     incorporable        SCRAP_ONLY_NO_INSTALL                     R10
+U-B02    C-2002     not_yet_reached     NOT_YET_REACHED_BEFORE_HOLD_POINT         R06
+U-B03    C-1001     out_of_effectivity  OUT_OF_EFFECTIVITY                        R01
+U-B03    C-1002     out_of_effectivity  OUT_OF_EFFECTIVITY                        R01
+U-B03    C-1003     out_of_effectivity  OUT_OF_EFFECTIVITY                        R01
+U-B03    C-2001     blocked_material    BLOCKED_SCRAP_WRONG_MATERIAL              R04
+U-B03    C-2002     not_yet_reached     NOT_YET_REACHED_BEFORE_HOLD_POINT         R06
+U-B04    C-1001     out_of_effectivity  OUT_OF_EFFECTIVITY                        R01
+U-B04    C-1002     out_of_effectivity  OUT_OF_EFFECTIVITY                        R01
+U-B04    C-1003     out_of_effectivity  OUT_OF_EFFECTIVITY                        R01
+U-B04    C-2001     not_yet_reached     NOT_YET_REACHED_BEFORE_HOLD_POINT         R06
+U-B04    C-2002     not_yet_reached     NOT_YET_REACHED_BEFORE_HOLD_POINT         R06
+U-B05    C-1001     out_of_effectivity  OUT_OF_EFFECTIVITY                        R01
+U-B05    C-1002     out_of_effectivity  OUT_OF_EFFECTIVITY                        R01
+U-B05    C-1003     out_of_effectivity  OUT_OF_EFFECTIVITY                        R01
+U-B05    C-2001     out_of_effectivity  OUT_OF_EFFECTIVITY                        R01
+U-B05    C-2002     incorporable        INCORPORABLE_REWORK                       R08
+
+rule_version 1.0.0
+
+state               count
+out_of_effectivity     29
+not_yet_reached        10
+incorporable            4
+late                    2
+blocked_material        3
+incorporated            2
+total                  50

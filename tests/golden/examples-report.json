@@ -1,0 +1,471 @@
+{
+  "rule_version": "1.0.0",
+  "input_hash": "92fff1e82a01243c0eec7c2b6aec4de722daa9d09e3a9cafd883cafe8d328ffc",
+  "inputs": {
+    "units": 10,
+    "changes": 5,
+    "material": 6,
+    "incorporations": 4
+  },
+  "counts": {
+    "blocked_material": 3,
+    "incorporable": 4,
+    "incorporated": 2,
+    "late": 2,
+    "not_yet_reached": 10,
+    "out_of_effectivity": 29
+  },
+  "decisions": [
+    {
+      "change_id": "C-1001",
+      "reason_code": "INCORPORATED",
+      "rule_ids": [
+        "R02"
+      ],
+      "status": "incorporated",
+      "unit_id": "U-A01"
+    },
+    {
+      "change_id": "C-1002",
+      "reason_code": "OUT_OF_EFFECTIVITY",
+      "rule_ids": [
+        "R01"
+      ],
+      "status": "out_of_effectivity",
+      "unit_id": "U-A01"
+    },
+    {
+      "change_id": "C-1003",
+      "reason_code": "INCORPORATED",
+      "rule_ids": [
+        "R02"
+      ],
+      "status": "incorporated",
+      "unit_id": "U-A01"
+    },
+    {
+      "change_id": "C-2001",
+      "reason_code": "OUT_OF_EFFECTIVITY",
+      "rule_ids": [
+        "R01"
+      ],
+      "status": "out_of_effectivity",
+      "unit_id": "U-A01"
+    },
+    {
+      "change_id": "C-2002",
+      "reason_code": "OUT_OF_EFFECTIVITY",
+      "rule_ids": [
+        "R01"
+      ],
+      "status": "out_of_effectivity",
+      "unit_id": "U-A01"
+    },
+    {
+      "change_id": "C-1001",
+      "reason_code": "LATE_HOLD_POINT_PASSED",
+      "rule_ids": [
+        "R05"
+      ],
+      "status": "late",
+      "unit_id": "U-A02"
+    },
+    {
+      "change_id": "C-1002",
+      "reason_code": "BLOCKED_RETROFIT_WRONG_MATERIAL",
+      "rule_ids": [
+        "R04"
+      ],
+      "status": "blocked_material",
+      "unit_id": "U-A02"
+    },
+    {
+      "change_id": "C-1003",
+      "reason_code": "LATE_HOLD_POINT_PASSED",
+      "rule_ids": [
+        "R05"
+      ],
+      "status": "late",
+      "unit_id": "U-A02"
+    },
+    {
+      "change_id": "C-2001",
+      "reason_code": "OUT_OF_EFFECTIVITY",
+      "rule_ids": [
+        "R01"
+      ],
+      "status": "out_of_effectivity",
+      "unit_id": "U-A02"
+    },
+    {
+      "change_id": "C-2002",
+      "reason_code": "OUT_OF_EFFECTIVITY",
+      "rule_ids": [
+        "R01"
+      ],
+      "status": "out_of_effectivity",
+      "unit_id": "U-A02"
+    },
+    {
+      "change_id": "C-1001",
+      "reason_code": "INCORPORABLE_REWORK",
+      "rule_ids": [
+        "R08"
+      ],
+      "status": "incorporable",
+      "unit_id": "U-A03"
+    },
+    {
+      "change_id": "C-1002",
+      "reason_code": "NOT_YET_REACHED_BEFORE_HOLD_POINT",
+      "rule_ids": [
+        "R06"
+      ],
+      "status": "not_yet_reached",
+      "unit_id": "U-A03"
+    },
+    {
+      "change_id": "C-1003",
+      "reason_code": "INCORPORABLE_USE_AS_IS_NO_REWORK",
+      "rule_ids": [
+        "R09"
+      ],
+      "status": "incorporable",
+      "unit_id": "U-A03"
+    },
+    {
+      "change_id": "C-2001",
+      "reason_code": "OUT_OF_EFFECTIVITY",
+      "rule_ids": [
+        "R01"
+      ],
+      "status": "out_of_effectivity",
+      "unit_id": "U-A03"
+    },
+    {
+      "change_id": "C-2002",
+      "reason_code": "OUT_OF_EFFECTIVITY",
+      "rule_ids": [
+        "R01"
+      ],
+      "status": "out_of_effectivity",
+      "unit_id": "U-A03"
+    },
+    {
+      "change_id": "C-1001",
+      "reason_code": "DATA_ERROR_INCORPORATED_OPEN_PREDECESSOR",
+      "rule_ids": [
+        "R03",
+        "R07"
+      ],
+      "status": "not_yet_reached",
+      "unit_id": "U-A04"
+    },
+    {
+      "change_id": "C-1002",
+      "reason_code": "NOT_YET_REACHED_BEFORE_HOLD_POINT",
+      "rule_ids": [
+        "R06"
+      ],
+      "status": "not_yet_reached",
+      "unit_id": "U-A04"
+    },
+    {
+      "change_id": "C-1003",
+      "reason_code": "NOT_YET_REACHED_PREDECESSOR_OPEN",
+      "rule_ids": [
+        "R07"
+      ],
+      "status": "not_yet_reached",
+      "unit_id": "U-A04"
+    },
+    {
+      "change_id": "C-2001",
+      "reason_code": "OUT_OF_EFFECTIVITY",
+      "rule_ids": [
+        "R01"
+      ],
+      "status": "out_of_effectivity",
+      "unit_id": "U-A04"
+    },
+    {
+      "change_id": "C-2002",
+      "reason_code": "OUT_OF_EFFECTIVITY",
+      "rule_ids": [
+        "R01"
+      ],
+      "status": "out_of_effectivity",
+      "unit_id": "U-A04"
+    },
+    {
+      "change_id": "C-1001",
+      "reason_code": "OUT_OF_EFFECTIVITY",
+      "rule_ids": [
+        "R01"
+      ],
+      "status": "out_of_effectivity",
+      "unit_id": "U-A05"
+    },
+    {
+      "change_id": "C-1002",
+      "reason_code": "NOT_YET_REACHED_BEFORE_HOLD_POINT",
+      "rule_ids": [
+        "R06"
+      ],
+      "status": "not_yet_reached",
+      "unit_id": "U-A05"
+    },
+    {
+      "change_id": "C-1003",
+      "reason_code": "NOT_YET_REACHED_BEFORE_HOLD_POINT",
+      "rule_ids": [
+        "R06"
+      ],
+      "status": "not_yet_reached",
+      "unit_id": "U-A05"
+    },
+    {
+      "change_id": "C-2001",
+      "reason_code": "OUT_OF_EFFECTIVITY",
+      "rule_ids": [
+        "R01"
+      ],
+      "status": "out_of_effectivity",
+      "unit_id": "U-A05"
+    },
+    {
+      "change_id": "C-2002",
+      "reason_code": "OUT_OF_EFFECTIVITY",
+      "rule_ids": [
+        "R01"
+      ],
+      "status": "out_of_effectivity",
+      "unit_id": "U-A05"
+    },
+    {
+      "change_id": "C-1001",
+      "reason_code": "OUT_OF_EFFECTIVITY",
+      "rule_ids": [
+        "R01"
+      ],
+      "status": "out_of_effectivity",
+      "unit_id": "U-B01"
+    },
+    {
+      "change_id": "C-1002",
+      "reason_code": "OUT_OF_EFFECTIVITY",
+      "rule_ids": [
+        "R01"
+      ],
+      "status": "out_of_effectivity",
+      "unit_id": "U-B01"
+    },
+    {
+      "change_id": "C-1003",
+      "reason_code": "OUT_OF_EFFECTIVITY",
+      "rule_ids": [
+        "R01"
+      ],
+      "status": "out_of_effectivity",
+      "unit_id": "U-B01"
+    },
+    {
+      "change_id": "C-2001",
+      "reason_code": "BLOCKED_SCRAP_WRONG_MATERIAL",
+      "rule_ids": [
+        "R04"
+      ],
+      "status": "blocked_material",
+      "unit_id": "U-B01"
+    },
+    {
+      "change_id": "C-2002",
+      "reason_code": "OUT_OF_EFFECTIVITY",
+      "rule_ids": [
+        "R01"
+      ],
+      "status": "out_of_effectivity",
+      "unit_id": "U-B01"
+    },
+    {
+      "change_id": "C-1001",
+      "reason_code": "OUT_OF_EFFECTIVITY",
+      "rule_ids": [
+        "R01"
+      ],
+      "status": "out_of_effectivity",
+      "unit_id": "U-B02"
+    },
+    {
+      "change_id": "C-1002",
+      "reason_code": "OUT_OF_EFFECTIVITY",
+      "rule_ids": [
+        "R01"
+      ],
+      "status": "out_of_effectivity",
+      "unit_id": "U-B02"
+    },
+    {
+      "change_id": "C-1003",
+      "reason_code": "OUT_OF_EFFECTIVITY",
+      "rule_ids": [
+        "R01"
+      ],
+      "status": "out_of_effectivity",
+      "unit_id": "U-B02"
+    },
+    {
+      "change_id": "C-2001",
+      "reason_code": "SCRAP_ONLY_NO_INSTALL",
+      "rule_ids": [
+        "R10"
+      ],
+      "status": "incorporable",
+      "unit_id": "U-B02"
+    },
+    {
+      "change_id": "C-2002",
+      "reason_code": "NOT_YET_REACHED_BEFORE_HOLD_POINT",
+      "rule_ids": [
+        "R06"
+      ],
+      "status": "not_yet_reached",
+      "unit_id": "U-B02"
+    },
+    {
+      "change_id": "C-1001",
+      "reason_code": "OUT_OF_EFFECTIVITY",
+      "rule_ids": [
+        "R01"
+      ],
+      "status": "out_of_effectivity",
+      "unit_id": "U-B03"
+    },
+    {
+      "change_id": "C-1002",
+      "reason_code": "OUT_OF_EFFECTIVITY",
+      "rule_ids": [
+        "R01"
+      ],
+      "status": "out_of_effectivity",
+      "unit_id": "U-B03"
+    },
+    {
+      "change_id": "C-1003",
+      "reason_code": "OUT_OF_EFFECTIVITY",
+      "rule_ids": [
+        "R01"
+      ],
+      "status": "out_of_effectivity",
+      "unit_id": "U-B03"
+    },
+    {
+      "change_id": "C-2001",
+      "reason_code": "BLOCKED_SCRAP_WRONG_MATERIAL",
+      "rule_ids": [
+        "R04"
+      ],
+      "status": "blocked_material",
+      "unit_id": "U-B03"
+    },
+    {
+      "change_id": "C-2002",
+      "reason_code": "NOT_YET_REACHED_BEFORE_HOLD_POINT",
+      "rule_ids": [
+        "R06"
+      ],
+      "status": "not_yet_reached",
+      "unit_id": "U-B03"
+    },
+    {
+      "change_id": "C-1001",
+      "reason_code": "OUT_OF_EFFECTIVITY",
+      "rule_ids": [
+        "R01"
+      ],
+      "status": "out_of_effectivity",
+      "unit_id": "U-B04"
+    },
+    {
+      "change_id": "C-1002",
+      "reason_code": "OUT_OF_EFFECTIVITY",
+      "rule_ids": [
+        "R01"
+      ],
+      "status": "out_of_effectivity",
+      "unit_id": "U-B04"
+    },
+    {
+      "change_id": "C-1003",
+      "reason_code": "OUT_OF_EFFECTIVITY",
+      "rule_ids": [
+        "R01"
+      ],
+      "status": "out_of_effectivity",
+      "unit_id": "U-B04"
+    },
+    {
+      "change_id": "C-2001",
+      "reason_code": "NOT_YET_REACHED_BEFORE_HOLD_POINT",
+      "rule_ids": [
+        "R06"
+      ],
+      "status": "not_yet_reached",
+      "unit_id": "U-B04"
+    },
+    {
+      "change_id": "C-2002",
+      "reason_code": "NOT_YET_REACHED_BEFORE_HOLD_POINT",
+      "rule_ids": [
+        "R06"
+      ],
+      "status": "not_yet_reached",
+      "unit_id": "U-B04"
+    },
+    {
+      "change_id": "C-1001",
+      "reason_code": "OUT_OF_EFFECTIVITY",
+      "rule_ids": [
+        "R01"
+      ],
+      "status": "out_of_effectivity",
+      "unit_id": "U-B05"
+    },
+    {
+      "change_id": "C-1002",
+      "reason_code": "OUT_OF_EFFECTIVITY",
+      "rule_ids": [
+        "R01"
+      ],
+      "status": "out_of_effectivity",
+      "unit_id": "U-B05"
+    },
+    {
+      "change_id": "C-1003",
+      "reason_code": "OUT_OF_EFFECTIVITY",
+      "rule_ids": [
+        "R01"
+      ],
+      "status": "out_of_effectivity",
+      "unit_id": "U-B05"
+    },
+    {
+      "change_id": "C-2001",
+      "reason_code": "OUT_OF_EFFECTIVITY",
+      "rule_ids": [
+        "R01"
+      ],
+      "status": "out_of_effectivity",
+      "unit_id": "U-B05"
+    },
+    {
+      "change_id": "C-2002",
+      "reason_code": "INCORPORABLE_REWORK",
+      "rule_ids": [
+        "R08"
+      ],
+      "status": "incorporable",
+      "unit_id": "U-B05"
+    }
+  ]
+}
