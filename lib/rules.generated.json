@@ -1,0 +1,88 @@
+{
+  "ruleVersion": "1.0.0",
+  "rules": [
+    {
+      "id": "R01",
+      "condition": "Unit key is outside the change's inclusive range (or has a different prefix)",
+      "status": "out_of_effectivity",
+      "reasonCodes": [
+        "OUT_OF_EFFECTIVITY"
+      ]
+    },
+    {
+      "id": "R02",
+      "condition": "Incorporation record says incorporated and predecessor_hold_status is closed",
+      "status": "incorporated",
+      "reasonCodes": [
+        "INCORPORATED"
+      ]
+    },
+    {
+      "id": "R03",
+      "condition": "Incorporation record says incorporated but predecessor_hold_status is open (data error). Never yields incorporated. Evaluation continues at R04; the final reason code is replaced by this one and R03 is listed first in rule_ids",
+      "status": null,
+      "reasonCodes": [
+        "DATA_ERROR_INCORPORATED_OPEN_PREDECESSOR"
+      ]
+    },
+    {
+      "id": "R04",
+      "condition": "Disposition is rework, retrofit, or scrap, and wrong material > 0",
+      "status": "blocked_material",
+      "reasonCodes": [
+        "BLOCKED_REWORK_WRONG_MATERIAL",
+        "BLOCKED_RETROFIT_WRONG_MATERIAL",
+        "BLOCKED_SCRAP_WRONG_MATERIAL"
+      ]
+    },
+    {
+      "id": "R05",
+      "condition": "Unit has passed the incorporation hold point (and R02/R04 did not match)",
+      "status": "late",
+      "reasonCodes": [
+        "LATE_HOLD_POINT_PASSED"
+      ]
+    },
+    {
+      "id": "R06",
+      "condition": "Unit hold point is before the incorporation hold point",
+      "status": "not_yet_reached",
+      "reasonCodes": [
+        "NOT_YET_REACHED_BEFORE_HOLD_POINT"
+      ]
+    },
+    {
+      "id": "R07",
+      "condition": "Unit is at the incorporation hold point (open) and predecessor_hold_status is open",
+      "status": "not_yet_reached",
+      "reasonCodes": [
+        "NOT_YET_REACHED_PREDECESSOR_OPEN"
+      ]
+    },
+    {
+      "id": "R08",
+      "condition": "At the point (open), predecessor closed, not blocked, disposition rework or retrofit",
+      "status": "incorporable",
+      "reasonCodes": [
+        "INCORPORABLE_REWORK",
+        "INCORPORABLE_RETROFIT"
+      ]
+    },
+    {
+      "id": "R09",
+      "condition": "At the point (open), predecessor closed, disposition use_as_is",
+      "status": "incorporable",
+      "reasonCodes": [
+        "INCORPORABLE_USE_AS_IS_NO_REWORK"
+      ]
+    },
+    {
+      "id": "R10",
+      "condition": "At the point (open), predecessor closed, disposition scrap, no superseded material staged or installed",
+      "status": "incorporable",
+      "reasonCodes": [
+        "SCRAP_ONLY_NO_INSTALL"
+      ]
+    }
+  ]
+}

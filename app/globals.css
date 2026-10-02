@@ -1,0 +1,156 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * Tokens. Dark-first control-room palette. Every hue is written once, here, as RGB
+ * channels so Tailwind can apply alpha. scripts/check-tokens.mjs fails on a raw
+ * colour literal anywhere else.
+ *
+ * Colour means one of a few things and nothing else:
+ *   engineering  links, selection, focus
+ *   governing    established, ready, accepted
+ *   conflict     known open, blocked
+ *   unresolved   cannot close yet, needs a record or a decision
+ *   human        a named person holds this decision
+ *   superseded   not applicable, not yet, retained
+ * Status is never colour alone: every state also carries a glyph and its word.
+ */
+:root {
+  --bg: 11 12 14;
+  --surface: 19 20 23;
+  --elevated: 26 28 32;
+  --inset: 8 9 11;
+  --ink: 242 243 245;
+  --ink-2: 199 203 211;
+  --ink-3: 162 169 182;
+  --muted: 143 150 164;
+  --rule: 42 45 51;
+  --rule-strong: 74 79 90;
+  --engineering: 74 159 216;
+  --engineering-fill: 26 106 168;
+  --engineering-soft: 12 26 36;
+  --governing: 91 214 125;
+  --governing-soft: 18 37 26;
+  --conflict: 255 106 69;
+  --conflict-soft: 42 23 18;
+  --unresolved: 224 164 69;
+  --unresolved-soft: 36 26 12;
+  --human: 230 216 184;
+  --human-soft: 28 25 18;
+
+  --gutter: clamp(1.25rem, 3.2vw, 3rem);
+  --shell-max: 1280px;
+  --dur-state: 200ms;
+}
+
+html {
+  color-scheme: dark;
+  background-color: rgb(var(--bg));
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  @apply bg-bg font-sans text-body text-ink-2 antialiased;
+  min-width: 320px;
+}
+
+h1,
+h2,
+h3 {
+  @apply text-ink;
+}
+
+::selection {
+  background: rgb(var(--engineering) / 0.35);
+}
+
+:focus-visible {
+  outline: 2px solid rgb(var(--engineering));
+  outline-offset: 2px;
+}
+
+main:focus {
+  outline: none;
+}
+
+@layer components {
+  .shell {
+    width: min(100% - 2 * var(--gutter), var(--shell-max));
+    margin-inline: auto;
+  }
+
+  .skip {
+    @apply absolute left-3 top-3 z-50 -translate-y-24 border border-rule-strong bg-elevated px-3 py-2 text-small text-ink;
+  }
+  .skip:focus-visible {
+    @apply translate-y-0;
+  }
+
+  .kicker {
+    @apply font-sans text-meta font-medium uppercase tracking-[0.08em] text-ink-3;
+  }
+
+  .panel {
+    @apply border border-rule bg-surface;
+  }
+  .panel-inset {
+    @apply border border-rule bg-inset;
+  }
+
+  .btn {
+    @apply inline-flex min-h-[2.5rem] items-center justify-center gap-2 border border-rule-strong bg-elevated px-4 py-2 text-small font-medium text-ink;
+    transition:
+      background-color var(--dur-state),
+      border-color var(--dur-state);
+  }
+  .btn:hover:not(:disabled) {
+    @apply border-ink-3;
+  }
+  .btn:disabled {
+    @apply cursor-not-allowed text-muted;
+  }
+  .btn-primary {
+    @apply border-engineering-fill bg-engineering-fill text-white;
+  }
+  .btn-primary:hover:not(:disabled) {
+    @apply border-engineering bg-engineering-fill;
+  }
+  .btn-primary:disabled {
+    @apply border-rule bg-elevated;
+  }
+  .btn-quiet {
+    @apply border-transparent bg-transparent text-ink-2 underline decoration-rule-strong underline-offset-4;
+  }
+
+  .field {
+    @apply w-full border border-rule-strong bg-inset px-3 py-2 font-mono text-meta leading-relaxed text-ink;
+  }
+  .field::placeholder {
+    @apply text-muted;
+  }
+  .field[aria-invalid="true"] {
+    @apply border-conflict;
+  }
+
+  .link {
+    @apply text-engineering underline decoration-engineering/40 underline-offset-4;
+  }
+  .link:hover {
+    @apply decoration-engineering;
+  }
+
+  .mono-id {
+    @apply font-mono text-meta text-ink;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 1ms !important;
+    animation-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
+}
