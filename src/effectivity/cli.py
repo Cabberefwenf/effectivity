@@ -25,24 +25,43 @@ M = TypeVar("M", bound=BaseModel)
 
 
 def load_table(path: Path, model: type[M]) -> list[M]:
-    """Read a CSV whose header is exactly the model's fields (any order)."""
+    """Read a CSV into models. Rules are in docs/state-machine.md ("Input rules").
+
+    UTF-8 with an optional BOM; header must be exactly the model's fields, each
+    once, in any order. Any problem raises ValueError naming file and line.
+    """
     expected = set(model.model_fields)
-    required = {name for name, f in model.model_fields.items() if f.is_required()}
     rows: list[M] = []
-    with path.open(encoding="utf-8", newline="") as handle:
-        reader = csv.DictReader(handle)
-        header = set(reader.fieldnames or [])
-        if not required <= header or not header <= expected:
-            raise ValueError(
-                f"{path}: columns {sorted(header)} do not match {sorted(expected)}"
-            )
-        for line_no, row in enumerate(reader, start=2):
-            if None in row or None in row.values():
-                raise ValueError(f"{path}:{line_no}: wrong number of fields")
-            try:
-                rows.append(model.model_validate(row))
-            except ValidationError as exc:
-                raise ValueError(f"{path}:{line_no}: {exc}") from exc
+    try:
+        with path.open(encoding="utf-8-sig", newline="") as handle:
+            reader = csv.DictReader(handle)
+            names = list(reader.fieldnames or [])
+            duplicated = sorted({n for n in names if names.count(n) > 1})
+            if duplicated:
+                raise ValueError(f"{path}: duplicate column(s) {duplicated}")
+            missing, unexpected = sorted(expected - set(names)), sorted(set(names) - expected)
+            if missing or unexpected:
+                raise ValueError(
+                    f"{path}: columns must be exactly {sorted(expected)}; "
+                    f"missing {missing}, unexpected {unexpected}"
+                )
+            for row in reader:
+                where = f"{path}:{reader.line_num}"
+                if None in row or None in row.values():
+                    raise ValueError(f"{where}: wrong number of fields")
+                try:
+                    rows.append(model.model_validate(row))
+                except ValidationError as exc:
+                    problems = "; ".join(
+                        f"{'.'.join(map(str, e['loc'])) or 'row'}: "
+                        f"{e['msg'].removeprefix('Value error, ')}"
+                        for e in exc.errors()
+                    )
+                    raise ValueError(f"{where}: {problems}") from exc
+    except UnicodeDecodeError as exc:
+        raise ValueError(f"{path}: not valid UTF-8 ({exc.reason})") from exc
+    except csv.Error as exc:
+        raise ValueError(f"{path}: malformed CSV ({exc})") from exc
     return rows
 
 
@@ -83,6 +102,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         help="opaque label stored verbatim in the log; never parsed, never read from a clock",
     )
     args = parser.parse_args(argv)
+    if args.run_at is not None and args.log is None:
+        parser.error("--run-at is only stored in the log; it requires --log")
 
     try:
         units = load_table(args.units, Unit)

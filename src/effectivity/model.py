@@ -6,7 +6,14 @@ import re
 from enum import StrEnum
 from typing import Annotated, Any, Literal, NamedTuple
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+from pydantic import (
+    AfterValidator,
+    BaseModel,
+    BeforeValidator,
+    ConfigDict,
+    field_validator,
+    model_validator,
+)
 
 
 class KeyFormatError(ValueError):
@@ -25,7 +32,7 @@ class Key(NamedTuple):
     suffix: str
 
 
-_KEY_RE = re.compile(r"([A-Z]{0,8})([0-9]+)([A-Z]?)", re.ASCII)
+_KEY_RE = re.compile(r"([A-Z]{0,8})([0-9]{1,18})([A-Z]?)", re.ASCII)
 
 
 def parse_key(token: str) -> Key:
@@ -33,7 +40,7 @@ def parse_key(token: str) -> Key:
     match = _KEY_RE.fullmatch(token) if isinstance(token, str) else None
     if match is None:
         raise KeyFormatError(
-            f"malformed key {token!r}: expected 0-8 upper-case letters, digits, "
+            f"malformed key {token!r}: expected 0-8 upper-case letters, 1-18 digits, "
             "then at most one upper-case letter (ADR 0001)"
         )
     prefix, number, suffix = match.groups()
@@ -75,8 +82,38 @@ class Status(StrEnum):
     INCORPORATED = "incorporated"
 
 
+_TEXT_RE = re.compile(r"[\x21-\x7e](?:[\x20-\x7e]*[\x21-\x7e])?", re.ASCII)
+_QTY_RE = re.compile(r"[0-9]{1,15}", re.ASCII)
+
+
+def _text(value: str) -> str:
+    if not _TEXT_RE.fullmatch(value):
+        raise ValueError(
+            f"{value!r}: expected non-empty printable ASCII with no leading or trailing space"
+        )
+    return value
+
+
+def _optional_text(value: str) -> str:
+    return value if value == "" else _text(value)
+
+
+def _quantity(value: Any) -> int:
+    if isinstance(value, str):
+        if not _QTY_RE.fullmatch(value):
+            raise ValueError(
+                f"{value!r}: quantity must be 1 to 15 ASCII digits (no sign, decimal point, or spaces)"
+            )
+        return int(value)
+    if isinstance(value, int) and not isinstance(value, bool) and 0 <= value < 10**15:
+        return value
+    raise ValueError(f"{value!r}: quantity must be an integer from 0 to 10**15 - 1")
+
+
 HoldStatus = Literal["open", "closed"]
-Quantity = Annotated[int, Field(ge=0)]
+Text = Annotated[str, AfterValidator(_text)]
+OptionalText = Annotated[str, AfterValidator(_optional_text)]
+Quantity = Annotated[int, BeforeValidator(_quantity)]
 
 _FROZEN = ConfigDict(frozen=True, extra="forbid")
 
@@ -89,8 +126,8 @@ def _checked_key(value: str) -> str:
 class Unit(BaseModel):
     model_config = _FROZEN
 
-    unit_id: str = Field(min_length=1)
-    program: str
+    unit_id: Text
+    program: Text
     effectivity_key: str
     hold_point: str
     hold_point_status: HoldStatus
@@ -105,13 +142,13 @@ class Unit(BaseModel):
 class Change(BaseModel):
     model_config = _FROZEN
 
-    change_id: str = Field(min_length=1)
+    change_id: Text
     effectivity_from: str
     effectivity_to: str
     incorporation_hold_point: str
     disposition: Disposition
-    supersedes_part: str
-    replacement_part: str
+    supersedes_part: OptionalText
+    replacement_part: OptionalText
 
     @field_validator("effectivity_from", "effectivity_to", "incorporation_hold_point")
     @classmethod
@@ -134,8 +171,8 @@ class Change(BaseModel):
 class MaterialState(BaseModel):
     model_config = _FROZEN
 
-    unit_id: str = Field(min_length=1)
-    part: str
+    unit_id: Text
+    part: Text
     qty_received_to_stores: Quantity
     qty_staged_at_work: Quantity
     qty_installed: Quantity
@@ -144,8 +181,8 @@ class MaterialState(BaseModel):
 class Incorporation(BaseModel):
     model_config = _FROZEN
 
-    unit_id: str = Field(min_length=1)
-    change_id: str = Field(min_length=1)
+    unit_id: Text
+    change_id: Text
     incorporated: bool
 
     @field_validator("incorporated", mode="before")

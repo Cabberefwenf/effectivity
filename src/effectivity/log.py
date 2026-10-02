@@ -80,8 +80,8 @@ def append_run(
 ) -> int:
     """Append one line to the log and return its sequence number (0-based line index).
 
-    The file is read once to find the next index, then opened in append mode
-    only. Existing lines are never rewritten. Not safe against concurrent
+    The file is read once to find the next index, then opened in binary append
+    mode only. Existing lines are never rewritten. Not safe against concurrent
     writers (see LIMITS.md).
     """
     sequence = 0
@@ -90,7 +90,11 @@ def append_run(
         if existing and not existing.endswith(b"\n"):
             raise ValueError(f"{path} does not end with a newline; refusing to append")
         sequence = existing.count(b"\n")
-    line = log_line(sequence, digest, decisions, run_at)
-    with path.open("a", encoding="utf-8", newline="\n") as handle:
-        handle.write(line + "\n")
+    # The whole line, newline included, is built first and written with one
+    # unbuffered write, so a failure before the write leaves the file untouched.
+    data = (log_line(sequence, digest, decisions, run_at) + "\n").encode("utf-8")
+    with path.open("ab", buffering=0) as handle:
+        written = handle.write(data)
+    if written != len(data):
+        raise OSError(f"short write to {path}: {written} of {len(data)} bytes")
     return sequence

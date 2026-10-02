@@ -86,18 +86,73 @@ and the status is whatever those rules decide. The reason code is
 determining rule's own reason code, so the problem stays visible in the output.
 R03 is never reached for a pair already settled by R01.
 
-## Inputs that stop the run instead of producing a decision
+## Input rules
 
-These raise errors; they are not decisions:
+Every rule here is checked on load. A violation raises an error that names the
+file, the line, and the field; the run stops and no log line is written. These
+rules decide which inputs are accepted; they do not change any decision, so the
+rule version is unchanged by them.
 
-- malformed key, hold point, or range (ADR 0001);
-- duplicate `unit_id` in units, duplicate `change_id` in changes, duplicate
-  (`unit_id`, `change_id`) in incorporations;
-- incorporation row naming an unknown unit or change; material row naming an
-  unknown unit;
-- hold points with different prefixes compared for an in-effectivity pair;
-- negative quantities, unknown enum values, missing or extra CSV columns,
-  `incorporated` not literally `true` or `false`.
+CSV files:
+
+- Encoding is UTF-8. A leading byte order mark (Excel "CSV UTF-8") is accepted
+  and ignored. LF and CRLF line endings both work. Completely blank lines are
+  skipped. Quoted fields are fine.
+- The header must contain exactly the documented columns, each once, in any
+  order, spelled exactly (no case folding, no stray spaces). Missing, extra,
+  and duplicate columns are errors (a duplicate column is never "last one wins").
+- A row with too few or too many fields is an error.
+- A header-only file is an empty table. That is valid for material and
+  incorporations; with no units or no changes there is nothing to decide and the
+  tool prints zero decisions.
+
+Fields:
+
+- `hold_point_status`, `predecessor_hold_status`: exactly `open` or `closed`.
+  `Open`, ` open`, `1`, and the empty string are errors.
+- `disposition`: exactly `use_as_is`, `rework`, `scrap`, or `retrofit`.
+- `incorporated`: exactly `true` or `false`. `True`, `1`, `yes`, empty are errors.
+- Quantities: 1 to 15 ASCII digits, nothing else. `-1`, `1.5`, `2.0`, `1e3`,
+  `+3`, `1_000`, ` 3`, non-ASCII digits, and the empty string are errors.
+  Leading zeros are fine (`007` is 7).
+- Keys and hold points: the grammar in ADR 0001 (ASCII, upper case, 1 to 18
+  digits).
+- `unit_id`, `change_id`, `program`, `part`: non-empty printable ASCII, no
+  leading or trailing space, no tabs, newlines, control characters, or
+  non-ASCII characters. This is deliberate: a trailing space or a Cyrillic
+  look-alike letter in a part number would otherwise make a material row
+  silently fail to match and hide wrong material. Matching is exact and
+  case-sensitive; there is no normalization.
+- `supersedes_part`: required (non-empty) for `rework`, `retrofit`, and
+  `scrap`; may be empty for `use_as_is`. Same character rule when non-empty.
+- `replacement_part`: may be empty or any valid part string for any
+  disposition. It is never read by the resolver. A value on `scrap` or
+  `use_as_is` is ignored, not rejected.
+- `effectivity_from <= effectivity_to`, same prefix, both present.
+
+Tables:
+
+- Duplicate `unit_id`, duplicate `change_id`, and more than one incorporation
+  row for the same (`unit_id`, `change_id`) are errors.
+- An incorporation row naming an unknown unit or change is an error. A material
+  row naming an unknown unit is an error. Material rows for parts that no change
+  supersedes are fine.
+- Hold points with different prefixes compared for an in-effectivity pair are an
+  error that names the unit and the change.
+
+## What the rules deliberately do not check
+
+- An incorporation record is trusted wherever the unit is: a record on a unit
+  whose hold point is before the change's incorporation hold point still yields
+  `incorporated` (R02) if the predecessor is closed. The tool does not know
+  whether incorporation before the hold point is legitimate in your process.
+- An incorporation record on a unit outside the change's effectivity is hidden
+  by R01. It is not reported.
+- A data-error overlay (R03) replaces the reason code, so a rework and a retrofit
+  that both hit R03 show the same reason code. The determining rule is in
+  `rule_ids`, and the disposition is in the change row.
+- The same superseded part named by two changes counts as wrong material for
+  both.
 
 ## Invariants and where they are tested
 

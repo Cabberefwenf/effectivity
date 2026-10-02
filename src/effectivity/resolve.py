@@ -12,6 +12,7 @@ from effectivity.model import (
     Change,
     Decision,
     Disposition,
+    IncomparableKeysError,
     Incorporation,
     MaterialState,
     Status,
@@ -115,9 +116,12 @@ def decide_pair(
             Status.BLOCKED_MATERIAL, _BLOCKED_BY_DISPOSITION[change.disposition], "R04"
         )
 
-    position = compare_hold_points(
-        parse_key(unit.hold_point), parse_key(change.incorporation_hold_point)
-    )
+    try:
+        position = compare_hold_points(
+            parse_key(unit.hold_point), parse_key(change.incorporation_hold_point)
+        )
+    except IncomparableKeysError as exc:
+        raise IncomparableKeysError(f"unit {unit_id!r}, change {change_id!r}: {exc}") from exc
     # R05
     if position > 0 or (position == 0 and unit.hold_point_status == "closed"):
         return finish(Status.LATE, LATE_HOLD_POINT_PASSED, "R05")

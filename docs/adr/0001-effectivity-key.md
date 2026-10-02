@@ -17,16 +17,18 @@ One grammar is used for both effectivity keys and hold point tokens.
 ```
 key    = prefix number [suffix]
 prefix = 0..8 characters from A-Z
-number = 1 or more characters from 0-9
+number = 1 to 18 characters from 0-9
 suffix = 0 or 1 character from A-Z
 ```
 
+- The 18-digit cap keeps the integer conversion independent of the Python
+  version and of `PYTHONINTMAXSTRDIGITS`; a longer number is rejected.
 - ASCII only. Upper case only. No whitespace, no separators, no sign.
   Anything else is rejected with a `KeyFormatError` naming the offending
   value. Nothing is stripped, upper-cased, or otherwise coerced.
 - Examples: `0123`, `0123A`, `HP010`, `SN00417`, `B0007`.
 - Rejected: `` (empty), `123a`, ` 123`, `12 3`, `H-12`, `123AB`, `ABC`, `-1`,
-  `123\n`, non-ASCII digits.
+  `123\n`, non-ASCII digits, numbers of more than 18 digits.
 
 ### Comparison
 
