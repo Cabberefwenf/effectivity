@@ -1,0 +1,4 @@
+unit_id,program,effectivity_key,hold_point,hold_point_status,predecessor_hold_status
+U-X1,P,0150,HP020,open,closed
+U-X2,P,0150,HP020,open,closed
+U-Y1,Q,0150,HP020,open,closed
