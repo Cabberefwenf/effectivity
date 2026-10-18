@@ -123,3 +123,21 @@ The web page is a thin shell around the same resolver. It adds these limits.
 - `tools/mutate.py` applies hand-picked mutants. Killing all of them shows the
   tests notice those changes; it is not a coverage measure.
 - CI runs the suite on Python 3.11 and 3.12 only. The web checks run on Node 20 and 22; the end-to-end suite runs on Node 22 with Chrome only.
+
+## Profit systems
+
+- Prices on the packaging page and in `profit.py` / `lib/profit.ts` are
+  PROPOSED only. Billing is OFF. There is no checkout, no payment form,
+  and no charge path. Every quote returns a charge of 0 and real revenue
+  is always 0.
+- Nothing here claims a customer, a sale, or a measured result. The
+  dashboard renders labeled demonstration data: a ledger built from the
+  bundled synthetic example plus a second demonstration run.
+- The retention score describes supplied usage only. It predicts nothing.
+- The value ledger is a pure data structure. This codebase stores no
+  ledger entries and no funnel counts. The site runs no analytics, so
+  the funnel is zero unless real counts are supplied, and a zero funnel
+  reports no conversion rate rather than an estimated rate.
+- A downgrade is not a refund. Past periods keep their terms.
+- Before any charge: a billing integration, a storage decision for ledger
+  entries, pilot and refund terms, and approval to charge.

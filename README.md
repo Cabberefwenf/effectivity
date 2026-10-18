@@ -110,3 +110,26 @@ npx vercel --prod                 # needs VERCEL_TOKEN or an interactive `vercel
 or import the GitHub repository in Vercel. `NEXT_PUBLIC_SITE_URL` is optional
 and only sets the canonical and Open Graph origin. Preview deployments are
 `noindex`.
+
+## Profit systems
+
+Packaging, proposed pricing, upgrade flows, retention, a ledger of value
+delivered, and a dashboard. Spec: [docs/profit.md](docs/profit.md), decision:
+[ADR 0006](docs/adr/0006-profit-systems.md). Canonical logic is
+`src/effectivity/profit.py`, mirrored in `lib/profit.ts`; shared vectors in
+`tests/profit-vectors.json` keep the two in sync. The profit module never
+decides a pair and never imports the resolver.
+
+Packages: Library (free reference tier), Pilot ($490/month or $4,900/year
+proposed, one programme, one trial period), Per programme ($1,900/month or
+$19,000/year proposed, one licence per programme). Annual equals 10 monthly
+payments. Prices are PROPOSED only: billing is OFF, every quote returns a
+charge of 0, and there is no checkout. The value ledger records runs,
+upgrades, downgrades, renewals, and pilot starts and ends, each run entry
+with an evidence reference. It proves work done and problems surfaced. It
+never records revenue, and it claims no customer, sale, or measured result.
+The dashboard at `/dashboard` shows usage against package limits,
+conversion, retention, and proof of value, from labeled demonstration data
+only. The packaging page at `/packaging` shows the packages and an upgrade
+planner. Blocked before charging: a billing integration, a storage decision
+for ledger entries, pilot and refund terms, and approval to charge.
