@@ -16,6 +16,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 R, M, L, C, S, T = "resolve.py", "model.py", "log.py", "cli.py", "service.py", "tables.py"
+A, K, P, V, Y = "applicability.py", "conflicts.py", "pipeline.py", "verify.py", "trace.py"
 
 # (name, file, old, new); old must occur in the file, first occurrence is replaced.
 MUTANTS: list[tuple[str, str, str, str]] = [
@@ -83,6 +84,19 @@ MUTANTS: list[tuple[str, str, str, str]] = [
     ("service: GET accepted", S, 'if environ.get("REQUEST_METHOD") != "POST":', 'if False:'),
     ("service: response cacheable", S, '("Cache-Control", "no-store")', '("Cache-Control", "public")'),
     ("service: sniffing allowed", S, '("X-Content-Type-Options", "nosniff")', '("X-Content-Type-Options", "")'),
+
+    # The extended pipeline (ADR 0004) and the audit layer (ADR 0005).
+    ("applicability: no rule means excluded", A, "    return True, A_DEFAULT", "    return False, A_DEFAULT"),
+    ("applicability: explicit rule ignored", A, "        if rule.program == program:\n            return rule.applies, A_EXPLICIT",
+     "        if False:\n            return rule.applies, A_EXPLICIT"),
+    ("conflict: two live changes not blocked", K, "        if len(members) <= 1:\n            continue", "        if len(members) <= 2:\n            continue"),
+    ("conflict: incorporated counts as live", K, "    Status.BLOCKED_MATERIAL,\n)",
+     "    Status.BLOCKED_MATERIAL,\n    Status.INCORPORATED,\n)"),
+    ("pipeline: excluded pairs still decided", P, "    kept = [d for d in all_decisions if mapping[(d.unit_id, d.change_id)][0]]",
+     "    kept = list(all_decisions)"),
+    ("trace: overlay never matched", Y, '        if rule == "R03":\n            matched = "R03" in rule_ids',
+     '        if rule == "R03":\n            matched = terminal == rule'),
+    ("verify: counts check removed", V, '            if record["counts"] != count_by_status(parsed):', "            if False:"),
 ]
 
 

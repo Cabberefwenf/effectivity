@@ -71,7 +71,9 @@ The web page is a thin shell around the same resolver. It adds these limits.
 - `hold_point` is taken as the latest hold point the unit has reached.
   `predecessor_hold_status` is a single per-unit flag for the hold before that
   one. The tool cannot check either against anything.
-- `program` is carried but not used for matching.
+- `program` is carried but not used for matching by the core resolver.
+  The extended pipeline uses it for applicability (ADR 0004); the core
+  six-state decisions never look at it.
 - `replacement_part` is carried but never used in a decision. A value on a
   `scrap` or `use_as_is` change is ignored, not rejected.
 - Material is matched on exact, case-sensitive string equality of `unit_id` and
@@ -98,6 +100,46 @@ The web page is a thin shell around the same resolver. It adds these limits.
 - Results sort by plain string order of `unit_id` then `change_id`
   (`U-10` sorts before `U-2`).
 
+## Extended pipeline
+
+- The extended pipeline (applicability, conflicts) is CLI-only. The web
+  function serves the core resolver and knows nothing about it.
+- `--log` records the core run over the four tables, even in extended
+  mode. A core log line cannot tell two extended runs apart if they
+  differ only in applicability or supersession tables. Use
+  `--extended-report` for the full extended record.
+- Applicability is a per-(change, program) table. It cannot express
+  applicability by serial range, date, lot, customer, or any other
+  dimension; a pair is either in or out.
+- A conflict is a property of a run, not of one pair. The core decisions
+  are never rewritten: a conflicted slot still shows the competing
+  decisions in the table, plus the BLOCKED verdict after it.
+- The conflict pass is not part of the core invariants. It is covered
+  by its own tests and mutants.
+- Dated effectivity is not modeled. Effectivity here is key order,
+  not calendar time.
+
+## Traces
+
+- A trace explains a decision; it is not a second decision function.
+  If a trace ever disagreed with its decision, the decision is
+  authoritative and the trace is a bug.
+- Traces are CLI-only (`--trace`). They are not part of the log or the
+  web reply.
+
+## Log verification
+
+- Verification checks shape, sequence, counts, order, and hash format.
+  It does not recompute decisions from inputs, because the log does
+  not carry inputs. A log whose decisions were fabricated consistently
+  passes verification.
+- Verification does not make the log tamper-evident. There is no hash
+  chain and no signature; anyone with write access can rewrite a log
+  and it will verify.
+- A backup manifest detects accidental damage and later edits only if
+  the manifest was kept separately and compared. Backups do not prove
+  a log was never edited.
+
 ## Invariants not fully encoded as tests
 
 - Invariant 7 (no clock, no network): enforced by a static import allowlist and
@@ -123,3 +165,6 @@ The web page is a thin shell around the same resolver. It adds these limits.
 - `tools/mutate.py` applies hand-picked mutants. Killing all of them shows the
   tests notice those changes; it is not a coverage measure.
 - CI runs the suite on Python 3.11 and 3.12 only. The web checks run on Node 20 and 22; the end-to-end suite runs on Node 22 with Chrome only.
+- The standards mapping in `docs/standards.md` is design rationale, not a
+  compliance claim. Nothing here is certified against ISO 10007,
+  SAE/EIA-649C, or AP242.

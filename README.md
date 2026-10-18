@@ -78,7 +78,51 @@ supply and requires `--log`; nothing in the tool reads a clock.
 - [docs/state-machine.md](docs/state-machine.md): the rules and input rules, written before the code.
 - [docs/adr/0001-effectivity-key.md](docs/adr/0001-effectivity-key.md): how keys and hold points are ordered.
 - [docs/adr/0002-no-clock-in-decision.md](docs/adr/0002-no-clock-in-decision.md): why the decision function is pure.
+- [docs/applicability.md](docs/applicability.md): applicability first, exactly-one-match conflicts (ADR 0004).
+- [docs/standards.md](docs/standards.md): what this tool takes from ISO 10007, SAE/EIA-649C, and AP242, and what it does not claim.
 - `tests/`: invariant tests, an exhaustive cross-check against an independent reference table, input edge cases, log tests.
+
+## Applicability and conflicts
+
+The core resolver decides every pair. The extended pipeline adds two
+layers around it, both CLI-only:
+
+```
+python -m effectivity --units examples/applicability/units.csv \
+  --changes examples/applicability/changes.csv \
+  --material examples/applicability/material.csv \
+  --incorporations examples/applicability/incorporations.csv \
+  --applicability examples/applicability/applicability.csv \
+  --supersession examples/applicability/supersession.csv \
+  [--extended-report report.json] [--conflicts]
+```
+
+Applicability first: a change that does not apply to a unit's program
+never reaches the resolver, and the excluded pair is listed. Then
+exactly-one-match: two live changes claiming one slot (same unit, same
+superseded part) BLOCK the run with exit code 3 instead of silently
+picking a winner. A supersession declaration is evidence, not a
+tie-break: if the superseded change is still live, the slot stays
+BLOCKED. Spec: [docs/applicability.md](docs/applicability.md).
+
+`--log` still records the core run over the four tables.
+`--extended-report` records the full extended run, including its
+extended input hash.
+
+## Traces, verification, backup
+
+```
+python -m effectivity --units ... --changes ... --material ... --incorporations ... \
+  --trace trace.jsonl              # one JSON decision trace per pair
+python -m effectivity --verify-log run-log.jsonl   # audit a log; exit 0 clean, 3 problems
+python tools/backup_log.py --log run-log.jsonl      # content-hash backup plus sha256 manifest
+```
+
+A trace shows why a decision fired: one step per rule with the values
+observed. Verification checks a log's shape, sequence, counts, and
+decision order without changing it. It does not recompute decisions
+from inputs, and it does not make the log tamper-evident. Details:
+[ADR 0005](docs/adr/0005-decision-traces-and-log-verification.md).
 
 ## Web demo and deploy
 

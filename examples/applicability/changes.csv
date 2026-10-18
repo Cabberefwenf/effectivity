@@ -1,0 +1,6 @@
+change_id,effectivity_from,effectivity_to,incorporation_hold_point,disposition,supersedes_part,replacement_part
+C-X1,0100,0200,HP020,rework,PN-9000,PN-9001
+C-X2,0100,0200,HP020,retrofit,PN-9000,PN-9002
+C-X3,0100,0200,HP020,use_as_is,PN-9100,
+C-X4,0100,0200,HP020,rework,PN-9200,PN-9201
+C-X5,0100,0200,HP020,retrofit,PN-9200,PN-9202
