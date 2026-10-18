@@ -175,3 +175,19 @@ the test.
 
 Invariant 7 is enforced by an import allowlist and a call check, not proven.
 See LIMITS.md.
+
+## Extensions (not part of R01 to R10)
+
+Two layers sit outside this document's rule table and never change it.
+Both are specified in [docs/applicability.md](applicability.md) and
+[ADR 0004](adr/0004-applicability-and-exactly-one-match.md):
+
+- Applicability (rules A01 to A03) filters pairs before R01. A pair
+  that does not apply is excluded and listed, not decided.
+- Conflicts (rules C01, C02) group the live decisions by slot after the
+  core pass. More than one live change on a slot BLOCKs the run; the
+  core decisions are never rewritten.
+
+Neither layer changes R01 to R10, the six states, or the rule version.
+Decision traces (ADR 0005) explain these rules per pair; they are
+evidence, not a second decision function.
